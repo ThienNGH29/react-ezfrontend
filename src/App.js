@@ -1,23 +1,26 @@
-import logo from './logo.svg';
-import './App.css';
+import { NavLink, Redirect, Route, Switch } from "react-router-dom";
+import NotFound from "./components/NotFound";
+import SongFeature from "./features/Song";
+import TodoFeature from "./features/Todo";
 
 function App() {
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <h2>Header</h2>
+      <p><NavLink to="/todos">Todos</NavLink></p>
+      <p><NavLink to="/songs">Song</NavLink></p>
+      
+      <Switch>
+        <Redirect from="/home" to="/" exact/>
+        <Redirect from="/post-list/:postId" to ="/posts/:postId" exact />
+
+        <Route path="/" component={SongFeature} exact />
+        <Route path="/todos" component={TodoFeature} />
+        <Route path="/songs" component={SongFeature} />
+
+        <Route component={NotFound} />
+      </Switch>
+      <h2>Footer</h2>
     </div>
   );
 }

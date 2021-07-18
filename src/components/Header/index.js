@@ -1,4 +1,4 @@
-import { TextField } from '@material-ui/core';
+import { IconButton, TextField } from '@material-ui/core';
 import AppBar from '@material-ui/core/AppBar';
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
@@ -8,6 +8,7 @@ import DialogContentText from '@material-ui/core/DialogContentText';
 import { makeStyles } from '@material-ui/core/styles';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
+import { Close } from '@material-ui/icons';
 import CodeIcon from '@material-ui/icons/Code';
 import Register from 'features/Auth/components/Register';
 import React, { useState } from 'react';
@@ -27,6 +28,13 @@ const useStyles = makeStyles((theme) => ({
     textDecoration: 'none',
     color: '#fff',
   },
+  closeBtn: {
+    position: 'absolute',
+    top: theme.spacing(1),
+    right: theme.spacing(1),
+    color: theme.palette.grey[500],
+    zIndex: 1
+  }
 }));
 
 export default function Header() {
@@ -72,14 +80,12 @@ export default function Header() {
         disableBackdropClick={true}
         disableEscapeKeyDown={true}
       >
+        <IconButton className={classes.closeBtn} onClick={handleClose}>
+          <Close/>
+        </IconButton>
         <DialogContent>
-          <Register/>
+          <Register closeDialog={handleClose}/>
         </DialogContent>
-        <DialogActions>
-          <Button onClick={handleClose} color="primary">
-            Cancel
-          </Button>
-        </DialogActions>
       </Dialog>
     </div>
   );

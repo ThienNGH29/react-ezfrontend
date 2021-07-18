@@ -1,5 +1,5 @@
 import { yupResolver } from '@hookform/resolvers/yup';
-import { Avatar, Button, makeStyles, Typography } from '@material-ui/core';
+import { Avatar, Button, CircularProgress, LinearProgress, makeStyles, Typography } from '@material-ui/core';
 import { LockOutlined } from '@material-ui/icons';
 import InputField from 'components/form-controls/InputField';
 import PasswordField from 'components/form-controls/PasswordField';
@@ -11,6 +11,7 @@ import * as yup from 'yup';
 const useStyles = makeStyles((theme) => ({
   root: {
     paddingTop: theme.spacing(4),
+    position: 'relative',
   },
 
   avatar: {
@@ -27,6 +28,13 @@ const useStyles = makeStyles((theme) => ({
     padding: theme.spacing(2, 4),
     margin: theme.spacing(2, 0, 1, 0),
     width: '100%',
+  },
+
+  process: {
+    position: 'absolute',
+    top: theme.spacing(2),
+    left: 0,
+    right: 0,
   },
 }));
 
@@ -61,17 +69,19 @@ function RegisterForm(props) {
     resolver: yupResolver(schema),
   });
 
-  const handleSubmit = (values) => {
+  const handleSubmit = async (values) => {
     const { onSubmit } = props;
     if (onSubmit) {
-      onSubmit(values);
+      await onSubmit(values);
     }
-
-    form.reset();
   };
+
+  const { isSubmitting } = form.formState;
 
   return (
     <div className={classes.root}>
+      {isSubmitting && <LinearProgress className={classes.process} />}
+
       <Avatar className={classes.avatar}>
         <LockOutlined></LockOutlined>
       </Avatar>
@@ -85,8 +95,8 @@ function RegisterForm(props) {
         <PasswordField name="password" label="Password" form={form} />
         <PasswordField name="retypePassword" label="Retype Password" form={form} />
 
-        <Button type="submit" variant="contained" color="primary" className={classes.submit}>
-          Create An Account
+        <Button disabled={isSubmitting} type="submit" variant="contained" color="primary" className={classes.submit}>
+          {isSubmitting ? <CircularProgress /> : 'Create An Account'}
         </Button>
       </form>
     </div>

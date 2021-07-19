@@ -1,12 +1,12 @@
 import Header from 'components/Header';
 import { useEffect } from 'react';
-import { NavLink, Redirect, Route, Switch } from 'react-router-dom';
+import { Redirect, Route, Switch } from 'react-router-dom';
 import productApi from './api/productApi';
 import NotFound from './components/NotFound';
 import CounterFeature from './features/Counter';
 import SongFeature from './features/Song';
 import TodoFeature from './features/Todo';
-import './index.scss'
+import './index.scss';
 
 function App() {
   useEffect(() => {
@@ -23,7 +23,7 @@ function App() {
 
   return (
     <div className="App">
-      <Header/>
+      <Header />
 
       <Switch>
         <Redirect from="/home" to="/" exact />

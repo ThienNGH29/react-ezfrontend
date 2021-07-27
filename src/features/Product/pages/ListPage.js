@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Box, Container, Grid, makeStyles, Paper, Typography } from '@material-ui/core';
 import productApi from 'api/productApi';
 import ProductSkeletonList from '../components/ProductSkeletonList';
+import ProductList from '../components/ProductList';
 
 const useStyles = makeStyles((theme) => ({
   root: {},
@@ -11,7 +12,7 @@ const useStyles = makeStyles((theme) => ({
   },
 
   right: {
-    flex: '1 1 auto',
+    flex: '1 1 0',
   },
 }));
 
@@ -30,7 +31,7 @@ function ListPage(props) {
       }
       setLoading(false)
     })();
-  });
+  }, []);
 
   return (
     <Box>
@@ -41,7 +42,7 @@ function ListPage(props) {
           </Grid>
           <Grid item className={classes.right}>
             <Paper elevation={0}>
-              {loading ? <ProductSkeletonList /> : <Typography>Product List</Typography>}
+              {loading ? <ProductSkeletonList /> : <ProductList data={productList}/>}
             </Paper>
           </Grid>
         </Grid>

@@ -82,7 +82,7 @@ export default function Header() {
           <CodeIcon className={classes.menuButton} />
           <Typography variant="h6" className={classes.title}>
             <Link className={classes.link} to="/">
-              EZ SHOP
+              SAITO SHOP
             </Link>
           </Typography>
 

@@ -2,6 +2,7 @@ import { Box, Container, Grid, makeStyles, Paper } from '@material-ui/core';
 import { Pagination } from '@material-ui/lab';
 import productApi from 'api/productApi';
 import React, { useEffect, useState } from 'react';
+import ProductFilters from '../components/ProductFilters';
 import ProductList from '../components/ProductList';
 import ProductSkeletonList from '../components/ProductSkeletonList';
 import ProductSort from '../components/ProductSort';
@@ -35,37 +36,43 @@ function ListPage(props) {
     total: 10,
     limit: 8,
   });
-  const [filter, setFilter] = useState({
+  const [filters, setFilters] = useState({
     _page: 1,
     _limit: 8,
-    _sort: 'salePrice:ASC'
+    _sort: 'salePrice:ASC',
   });
 
   useEffect(() => {
     (async () => {
       try {
-        const { data, pagination } = await productApi.getAll(filter);
+        const { data, pagination } = await productApi.getAll(filters);
         setProductList(data);
         setPagination(pagination);
-        console.log({ data, pagination });
       } catch (error) {
         console.log('Failed to fetch product list: ', error);
       }
       setLoading(false);
     })();
-  }, [filter]);
+  }, [filters]);
 
   const handlePageChange = (e, page) => {
-    setFilter((prevFilters) => ({
+    setFilters((prevFilters) => ({
       ...prevFilters,
       _page: page,
     }));
   };
 
   const handleSortChange = (newSortVal) => {
-    setFilter((prevFilters) => ({
+    setFilters((prevFilters) => ({
       ...prevFilters,
       _sort: newSortVal,
+    }));
+  };
+
+  const handleFiltersChange = (newFilters) => {
+    setFilters((prevFilters) => ({
+      ...prevFilters,
+      ...newFilters,
     }));
   };
 
@@ -74,11 +81,13 @@ function ListPage(props) {
       <Container>
         <Grid container spacing={1}>
           <Grid item className={classes.left}>
-            <Paper elevation={0}>lef col</Paper>
+            <Paper elevation={0}>
+              <ProductFilters filters={filters} onChange={handleFiltersChange} />
+            </Paper>
           </Grid>
           <Grid item className={classes.right}>
             <Paper elevation={0}>
-              <ProductSort sortValue={filter._sort} onchange={handleSortChange}/>
+              <ProductSort sortValue={filters._sort} onchange={handleSortChange} />
               {loading ? <ProductSkeletonList length={8} /> : <ProductList data={productList} />}
 
               <Box className={classes.pagination}>

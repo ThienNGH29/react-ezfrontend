@@ -1,7 +1,9 @@
 import { Box, Container, Grid, makeStyles, Paper } from '@material-ui/core';
 import { Pagination } from '@material-ui/lab';
 import productApi from 'api/productApi';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
+import queryString from 'query-string';
+import { useHistory, useLocation } from 'react-router-dom';
 import FilterViewer from '../components/FilterViewer';
 import ProductFilters from '../components/ProductFilters';
 import ProductList from '../components/ProductList';
@@ -30,6 +32,24 @@ const useStyles = makeStyles((theme) => ({
 
 function ListPage(props) {
   const classes = useStyles();
+
+  const history = useHistory();
+  const location = useLocation();
+  const queryParams = useMemo(() => {
+    const params = queryString.parse(location.search);
+    // true -> "true"
+    // { isPromotion: "true" }
+
+    return {
+      ...params,
+      _page: Number.parseInt(params._page) || 1,
+      _limit: Number.parseInt(params._limit) || 8,
+      _sort: params._sort || 'salePrice:ASC',
+      isPromotion: params.isPromotion === 'true',
+      isFreeShip: params.isFreeShip === 'true'
+    }
+  }, [location.search]) 
+
   const [productList, setProductList] = useState([]);
   const [loading, setLoading] = useState(true);
   const [pagination, setPagination] = useState({
@@ -37,16 +57,11 @@ function ListPage(props) {
     total: 10,
     limit: 8,
   });
-  const [filters, setFilters] = useState({
-    _page: 1,
-    _limit: 8,
-    _sort: 'salePrice:ASC',
-  });
 
   useEffect(() => {
     (async () => {
       try {
-        const { data, pagination } = await productApi.getAll(filters);
+        const { data, pagination } = await productApi.getAll(queryParams);
         setProductList(data);
         setPagination(pagination);
       } catch (error) {
@@ -54,32 +69,53 @@ function ListPage(props) {
       }
       setLoading(false);
     })();
-  }, [filters]);
+  }, [queryParams]);
 
   const handlePageChange = (e, page) => {
-    setFilters((prevFilters) => ({
-      ...prevFilters,
+    const filters = {
+      ...queryParams,
       _page: page,
-    }));
+    }
+
+    history.push({
+      pathname: history.location.pathname,
+      search: queryString.stringify(filters)
+    })
   };
 
   const handleSortChange = (newSortVal) => {
-    setFilters((prevFilters) => ({
-      ...prevFilters,
+    const filters = {
+      ...queryParams,
       _sort: newSortVal,
-    }));
+    }
+
+    history.push({
+      pathname: history.location.pathname,
+      search: queryString.stringify(filters)
+    })
   };
 
   const handleFiltersChange = (newFilters) => {
-    setFilters((prevFilters) => ({
-      ...prevFilters,
+    const filters = {
+      ...queryParams,
       ...newFilters,
-    }));
+    }
+
+    history.push({
+      pathname: history.location.pathname,
+      search: queryString.stringify(filters)
+    })
   };
 
   const setNewFilters = (newFilters) => {
-    console.log('asdasd');
-    setFilters(newFilters)
+    const filters = {
+      ...newFilters,
+    }
+
+    history.push({
+      pathname: history.location.pathname,
+      search: queryString.stringify(filters)
+    })
   }
 
   return (
@@ -88,13 +124,13 @@ function ListPage(props) {
         <Grid container spacing={1}>
           <Grid item className={classes.left}>
             <Paper elevation={0}>
-              <ProductFilters filters={filters} onChange={handleFiltersChange} />
+              <ProductFilters filters={queryParams} onChange={handleFiltersChange} />
             </Paper>
           </Grid>
           <Grid item className={classes.right}>
             <Paper elevation={0}>
-              <ProductSort sortValue={filters._sort} onchange={handleSortChange} />
-              <FilterViewer filters={filters} onChange={setNewFilters}/>
+              <ProductSort sortValue={queryParams._sort} onchange={handleSortChange} />
+              <FilterViewer filters={queryParams} onChange={setNewFilters}/>
               {loading ? <ProductSkeletonList length={8} /> : <ProductList data={productList} />}
 
               <Box className={classes.pagination}>
